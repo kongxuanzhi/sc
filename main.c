@@ -23,11 +23,11 @@ THE SOFTWARE.
 #include "polipo.h"
 
 AtomPtr configFile = NULL;
-//When Polipo is run as a daemon, 
+//When Polipo is run as a daemon,
 //it can be useful to get it to atomically write its pid to a file.
-//If the variable pidFile is defined, 
+//If the variable pidFile is defined,
 //it should be the name of a file where Polipo will write its pid.
-//If the file already exists when it is started, 
+//If the file already exists when it is started,
 //Polipo will refuse to run.
 AtomPtr pidFile = NULL;
 
@@ -36,7 +36,7 @@ int daemonise = 0;
 static void
 usage(char *argv0)
 {
-    fprintf(stderr, 
+    fprintf(stderr,
             "%s [ -h ] [ -v ] [ -x ] [ -c filename ] [ -- ] [ var=val... ]\n",
             argv0);
     fprintf(stderr, "  -h: display this message.\n");
@@ -152,7 +152,7 @@ main(int argc, char **argv)
         exit(0);
     }
 
-    if(expire) { //???????????—¤?????
+    if(expire) { //???????????ï¿½ï¿½?????
         expireDiskObjects();
         exit(0);
     }
@@ -163,7 +163,7 @@ main(int argc, char **argv)
     if(pidFile)
         writePid(pidFile->string);
 
-    listener = create_listener(proxyAddress->string, 
+    listener = create_listener(proxyAddress->string,
                                proxyPort, httpAccept, NULL);
     if(!listener) {
         if(pidFile) unlink(pidFile->string);

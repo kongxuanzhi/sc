@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "mingw.h": "c",
+        "event.h": "c",
+        "diskcache.h": "c",
+        "http.h": "c",
+        "io.h": "c",
+        "local.h": "c",
+        "socks.h": "c",
+        "fcntl.h": "c"
+    }
+}

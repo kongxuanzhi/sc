@@ -44,7 +44,7 @@ static struct pollfd *poll_fds = NULL; //结构体数组
 static FdEventHandlerPtr *fdEvents = NULL, *fdEventsLast = NULL;
 int diskIsClean = 1;
 
-static int fds_invalid = 0; //这个变量先不管它
+static int fds_invalid = 0; //poll_fds fdEvents数组统一向前移动了一位
  
 static inline int
 timeval_cmp(struct timeval *t1, struct timeval *t2)
@@ -809,6 +809,7 @@ eventLoop()
             }
             continue;
         }
+
 		//并不是要检测所有的改变，当看到有活动，我们认为是有事物发生了改变。
         /* Rather than tracking all changes to the in-memory cache, we
            assume that something changed whenever we see any activity. */
@@ -824,10 +825,10 @@ eventLoop()
                 break;
             if(poll_fds[j].revents) { // poll返回的时候会设置
                 n--; //减少一个event
-                event = findEvent(poll_fds[j].revents, fdEvents[j]);
-                if(!event)
+                event = findEvent(poll_fds[j].revents, fdEvents[j]);  //在fdEvents[i]中查找发生的事件revents
+                if(!event) //向下一条查找
                     continue;
-                done = event->handler(0, event);
+                done = event->handler(0, event); //httpAccept处理event， 0代表未发生错误
                 if(done) {
                     if(fds_invalid)
                         unregisterFdEvent(event);

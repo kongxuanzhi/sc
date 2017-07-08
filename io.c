@@ -788,7 +788,7 @@ create_listener(char *address, int port,
         return NULL;
     }
         
-    rc = listen(fd, 1024);
+    rc = listen(fd, 1024); //fd 是一个整数，一定会小于1024
     if(rc < 0) {
         do_log_error(L_ERROR, errno, "Couldn't listen");
         CLOSE(fd);
