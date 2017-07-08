@@ -16,7 +16,7 @@
 
 static AtomPtr *atomHashTable;
 int used_atoms; //使用的atom个数
-
+//change
 //ref: main.c
 void
 initAtoms()
@@ -112,10 +112,10 @@ atomSplit(AtomPtr atom, char c, AtomPtr *return1, AtomPtr *return2)
     char *p;
     AtomPtr atom1, atom2;
     p = memchr(atom->string, c, atom->length); //返回c在string中位置
-    
+
 	if(p == NULL) //未找到
         return 0;
-    
+
 	atom1 = internAtomN(atom->string, p - atom->string); //前p个组成一个
     if(atom1 == NULL)
         return -ENOMEM;
@@ -186,7 +186,7 @@ releaseAtom(AtomPtr atom)
 	//视角只放在这个函数上，不要考虑其他的外部因素
     if(atom == NULL)
         return;
-	
+
     do_log(D_ATOM_REFCOUNT, "A 0x%lx %d--\n",
            (unsigned long)atom, atom->refcount); //记录释放前引用次数
     assert(atom->refcount >= 1 && atom->refcount < LARGE_ATOM_REFCOUNT); //范围限制
@@ -209,7 +209,7 @@ releaseAtom(AtomPtr atom)
                 previous = previous->next;
             }
             assert(previous->next != NULL);
-            previous->next = atom->next; 
+            previous->next = atom->next;
             free(atom);
         }
         used_atoms--;
@@ -324,11 +324,11 @@ makeAtomList(AtomPtr *atoms, int n) // 0<n<1024
     list->length = 0;
     list->size = 0;
     list->list = NULL;
-  
+
 	if(n > 0) {
         int i;
         list->list = malloc(n * sizeof(AtomPtr));
-        
+
 		if(list->list == NULL) {
             free(list);
             return NULL;
