@@ -7,6 +7,14 @@
         "io.h": "c",
         "local.h": "c",
         "socks.h": "c",
-        "fcntl.h": "c"
+        "fcntl.h": "c",
+        "object.h": "c",
+        "atom.h": "c",
+        "config.h": "c",
+        "forbidden.h": "c",
+        "server.h": "c",
+        "tunnel.h": "c",
+        "sigcontext.h": "c",
+        "assert.h": "c"
     }
 }
