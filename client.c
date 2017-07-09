@@ -113,7 +113,7 @@ httpAccept(int fd, FdEventHandlerPtr event, AcceptRequestPtr request)
            (unsigned long)connection);
 
     connection->flags = CONN_READER;
-    //返回reqbuf到connection中
+    //返回reqbuf到connection中, now now执行
     do_stream_buf(IO_READ | IO_NOTNOW, connection->fd, 0,
                   &connection->reqbuf, CHUNK_SIZE,
                   httpClientHandler, connection);
@@ -360,8 +360,7 @@ httpClientDelayedShutdownHandler(TimeEventHandlerPtr event)
 }
 
 int
-httpClientHandler(int status,
-                  FdEventHandlerPtr event, StreamRequestPtr request)
+httpClientHandler(int status, FdEventHandlerPtr event, StreamRequestPtr request)
 {
     HTTPConnectionPtr connection = request->data;
     int i, body;

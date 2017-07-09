@@ -372,16 +372,16 @@ do_scheduled_stream(int status, FdEventHandlerPtr event)
     if(rc > 0) {
         request->offset += rc;
         if(request->offset < 0) return 0;
-        done = request->handler(0, event, request);
+        done = request->handler(0, event, request); // httpClientHandler
         return done;
     } else if(rc == 0 || errno == EPIPE) {
-        done = request->handler(1, event, request);
+        done = request->handler(1, event, request); // httpClientHandler
     } else if(errno == EAGAIN || errno == EINTR) {
         return 0;
     } else if(errno == EFAULT || errno == EBADF) {
         abort();
     } else {
-        done = request->handler(-errno, event, request);
+        done = request->handler(-errno, event, request); //httpClientHandler
     }
     assert(done);
     return done;

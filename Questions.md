@@ -123,10 +123,15 @@ typedef struct _ConnectRequest {
 
 9. 程序是怎么运行的？
     1. io.c: create_listen(socket. bind, listen)
-    2. io.c: schedule_accept (registerFdEvent) 等待main函数执行event->handle
-    3. io.c: do_scheduled_accept(accept阻塞)
-    4. client.c: httpAccept（阻塞结束，处理与客户端的连接）
+    2. io.c: schedule_accept (registerFdEvent) eventloop 轮询 runTimeEventQueue回调3
+    3. io.c: do_scheduled_accept(accept阻塞)，accept client. goto 4
+    4. client.c: httpAccept（阻塞结束，处理与客户端的连接）->httpMakeConnection（goto 6）->scheduleTimeEvent：120ms->回调5
     5. client.c: httpTimeoutHandler关闭连接（shutdown），删除事件pokeFdEvent
     6. io.c: do_stream_buf : 回调执行client.c httpClientHandler
-10. 什么时候回调httpClientHandler？
+    7. io.c: schedule_stream->makeFdEvent(operation)->registerFdEventHelper : eventloop 轮询event->handle 回调8
+    8. io.c: do_scheduled_stream获得request执行 httpClientHandler
+10. 什么时候回调httpClientHandler？ 
+    在do_stream_buf中，设置回调函数httpClientHandler, 统一调用schedule_stream, 
+    将httpClientHandle作为event的data设置，放进fdEvents事件数组中。
+    在eventloop中轮询执行事件event->handle，回调do_scheduled_stream, 在它里面执行handle->httpClientHandler, 
     
