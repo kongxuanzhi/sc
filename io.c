@@ -208,7 +208,7 @@ schedule_stream(int operation, int fd, int offset,
         assert(done);
         return NULL;
     }
-
+    //process right now: not now
     if(!(operation & IO_NOTNOW)) {
         done = event->handler(0, event);
         if(done) {
@@ -216,7 +216,7 @@ schedule_stream(int operation, int fd, int offset,
             return NULL;
         }
     } 
-
+    //process immediately
     if(operation & IO_IMMEDIATE) {
         assert(hlen == 0 && !(operation & IO_CHUNKED));
         done = (*handler)(0, event, &request);
@@ -225,6 +225,7 @@ schedule_stream(int operation, int fd, int offset,
             return NULL;
         }
     }
+    //push into fdEvents
     event = registerFdEventHelper(event);
     return event;
 }
@@ -625,6 +626,7 @@ do_scheduled_connect(int status, FdEventHandlerPtr event)
     }
 }
 
+//该函数未用到
 FdEventHandlerPtr
 do_accept(int fd,
           int (*handler)(int, FdEventHandlerPtr, AcceptRequestPtr),
@@ -643,6 +645,7 @@ do_accept(int fd,
     return event;
 }
 
+//create_listener 注册事件交给do_scheduled_accept执行
 FdEventHandlerPtr
 schedule_accept(int fd,
                 int (*handler)(int, FdEventHandlerPtr, AcceptRequestPtr),
@@ -655,6 +658,7 @@ schedule_accept(int fd,
     request.fd = fd;
     request.handler = handler;
     request.data = data;
+    //注册过后不立即执行的，在main函数中的evenLoop循环执行
     event = registerFdEvent(fd, POLLIN, 
                             do_scheduled_accept, sizeof(request), &request);
     if(!event) {
@@ -664,6 +668,7 @@ schedule_accept(int fd,
     return event;
 }
 
+//schedule_accept
 int
 do_scheduled_accept(int status, FdEventHandlerPtr event)
 {
@@ -671,20 +676,20 @@ do_scheduled_accept(int status, FdEventHandlerPtr event)
     int rc, done;
     unsigned len;
     struct sockaddr_in addr;
-
+    //在main函数中执行status=0
     if(status) {
-        done = request->handler(status, event, request);
+        done = request->handler(status, event, request); //httpAccept
         if(done) return done;
     }
 
     len = sizeof(struct sockaddr_in);
-
+    //监听 request->fd服务器端socket，返回一个socket用来处理与客户端的通信，和addr信息
     rc = accept(request->fd, (struct sockaddr*)&addr, &len);
-
+    //accept后会阻塞，直到有一个客户端请求连接，
     if(rc >= 0)
-        done = request->handler(rc, event, request);
+        done = request->handler(rc, event, request); //httpAccept
     else
-        done = request->handler(-errno, event, request);
+        done = request->handler(-errno, event, request); //httpAccept
     return done;
 }
 

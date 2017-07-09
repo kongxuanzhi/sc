@@ -354,6 +354,28 @@ cancelTimeEvent(TimeEventHandlerPtr event)
     free(event);
 }
 
+//同步，从前往后执行队列中的到时的event， 并从队列中删除
+//staticref: eventLoop
+void
+runTimeEventQueue()
+{
+    TimeEventHandlerPtr event;
+    int done;
+	//事件发生的时间到了，执行事件
+    while(timeEventQueue && 
+          timeval_cmp(&timeEventQueue->time, &current_time) <= 0) {
+        event = timeEventQueue;
+        timeEventQueue = event->next;
+        if(timeEventQueue)
+            timeEventQueue->previous = NULL; //not the last one.
+        else
+            timeEventQueueLast = NULL; //last one
+        done = event->handler(event); // call handler function to handler event.
+        assert(done);
+        free(event);
+    }
+}
+
 // 下面是关于FdEvent双链表的操作
 //ref : registerFdEventHelper
 int
@@ -555,28 +577,6 @@ unregisterFdEvent(FdEventHandlerPtr event)
     }
 	//event不存在，中断程序运行
     abort();
-}
-
-//同步，从前往后执行队列中的到时的event， 并从队列中删除
-//staticref: eventLoop
-void
-runTimeEventQueue()
-{
-    TimeEventHandlerPtr event;
-    int done;
-	//事件发生的时间到了，执行事件
-    while(timeEventQueue && 
-          timeval_cmp(&timeEventQueue->time, &current_time) <= 0) {
-        event = timeEventQueue;
-        timeEventQueue = event->next;
-        if(timeEventQueue)
-            timeEventQueue->previous = NULL; //not the last one.
-        else
-            timeEventQueueLast = NULL; //last one
-        done = event->handler(event); // call handler function to handler event.
-        assert(done);
-        free(event);
-    }
 }
 
 //staticref: findEvent

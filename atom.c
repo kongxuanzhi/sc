@@ -24,7 +24,7 @@ initAtoms()
 	//calloc： http://blog.csdn.net/zhongjiekangping/article/details/6162748
 	//1 << LOG2_ATOM_HASH_TABLE_SIZE) = 2^10 = 1024
     atomHashTable = calloc((1 << LOG2_ATOM_HASH_TABLE_SIZE), sizeof(AtomPtr)); //数组链表 hash表
-
+    
     if(atomHashTable == NULL) {
         do_log(L_ERROR, "Couldn't allocate atom hash table.\n");
         exit(1);

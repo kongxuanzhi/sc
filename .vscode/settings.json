@@ -15,6 +15,13 @@
         "server.h": "c",
         "tunnel.h": "c",
         "sigcontext.h": "c",
-        "assert.h": "c"
+        "assert.h": "c",
+        "dns.h": "c",
+        "http_parse.h": "c",
+        "util.h": "c",
+        "chunk.h": "c",
+        "stdlib.h": "c",
+        "log.h": "c",
+        "libio.h": "c"
     }
 }

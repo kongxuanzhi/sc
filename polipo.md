@@ -234,3 +234,11 @@ The domain name service (DNS) is a distributed database that maps host names to 
 15. Polipo usually tries to speak the DNS protocol itself rather than using the system resolver
 
 
+[accept()函数](http://www.360doc.com/content/13/0908/17/13253385_313070996.shtml)
+http://ticktick.blog.51cto.com/823160/779866/
+　　准备好了，系统调用 accept() 会有点古怪的地方的！你可以想象发生 这样的事情：有人从很远的地方通过一个你在侦听 (listen()) 的端口连接 (connect()) 到你的机器。它的连接将加入到等待接受 (accept()) 的队列 中。你调用 accept() 告诉它你有空闲的连接。它将返回一个新的套接字文 件描述符！这样你就有两个套接字了，原来的一个还在侦听你的那个端口， 新的在准备发送 (send()) 和接收 ( recv()) 数据。这就是这个过程！
+函数是这样定义的： 
+#include <sys/socket.h>
+int accept(int sockfd, void *addr, int *addrlen); 
+sockfd 相当简单，是和 listen() 中一样的套接字描述符。addr 是个指 向局部的数据结构 sockaddr_in 的指针。这是要求接入的信息所要去的地 方（你可以测定那个地址在那个端口呼叫你）。在它的地址传递给 accept 之 前，addrlen 是个局部的整形变量，设置为 sizeof(struct sockaddr_in)。 accept 将不会将多余的字节给 addr。如果你放入的少些，那么它会通过改
+变 addrlen 的值反映出来。
