@@ -134,4 +134,6 @@ typedef struct _ConnectRequest {
     在do_stream_buf中，设置回调函数httpClientHandler, 统一调用schedule_stream, 
     将httpClientHandle作为event的data设置，放进fdEvents事件数组中。
     在eventloop中轮询执行事件event->handle，回调do_scheduled_stream, 在它里面执行handle->httpClientHandler, 
+11. accept之后什么时候执行rec，send函数？
     
+12. Chunk是什么？一个大小的chunk有多大，存放的东西是什么？对chunk都有哪些操作？
