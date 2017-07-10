@@ -284,7 +284,7 @@ set_errno(int winsock_err)
 
 int win32_write_socket(SOCKET fd, void *buf, int n)
 {
-    int rc = send(fd, buf, n, 0);
+    int rc = send(fd, buf, n, 0); //send先比较待发送数据的长度len和套接字s的发送缓冲的长度， 如果len大于s的发送缓冲区的长度，该函数返回SOCKET_ERROR；
     if(rc == SOCKET_ERROR) {
         set_errno(WSAGetLastError());
     }
@@ -489,17 +489,17 @@ polipo_readv(int fd, const struct iovec *vector, int count)
     for(i = 0; i < count; i++) {
         int n = vector[i].iov_len;
         int rc = READ(fd, vector[i].iov_base, n);
-        if(rc == n) {
-            ret += rc;
-        } else {
-            if(rc < 0) {
+        if(rc == n) {//读了n个字节
+            ret += rc; 
+        } else { //最后一个不满n个字节
+            if(rc < 0) { //失败的情况
                 ret = (ret == 0 ? rc : ret);
             } else {
                 ret += rc;
             }
-            break;
+            break; //结束循环
         }
     }
-    return ret;
+    return ret; //读的字节长度
 }
 #endif

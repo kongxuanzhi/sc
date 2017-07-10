@@ -129,11 +129,29 @@ typedef struct _ConnectRequest {
     5. client.c: httpTimeoutHandler关闭连接（shutdown），删除事件pokeFdEvent
     6. io.c: do_stream_buf : 回调执行client.c httpClientHandler
     7. io.c: schedule_stream->makeFdEvent(operation)->registerFdEventHelper : eventloop 轮询event->handle 回调8
-    8. io.c: do_scheduled_stream获得request执行 httpClientHandler
+    8. io.c: do_scheduled_stream从event的data中获得request，request中带httpClientHandler的handle，eventloop中轮询
 10. 什么时候回调httpClientHandler？ 
     在do_stream_buf中，设置回调函数httpClientHandler, 统一调用schedule_stream, 
     将httpClientHandle作为event的data设置，放进fdEvents事件数组中。
     在eventloop中轮询执行事件event->handle，回调do_scheduled_stream, 在它里面执行handle->httpClientHandler, 
 11. accept之后什么时候执行rec，send函数？
-    
+    1. mingw.h: 
+        ```
+        #define READ(x, y, z)  win32_read_socket(x, y, z)
+        #define WRITE(x, y, z) win32_write_socket(x, y, z)
+        #define CLOSE(x)       win32_close_socket(x) 
+        ```
+    2. io.c: do_scheduled_stream
+    3. mingw.h: polipo_writev
+        ```
+        #define WRITEV(x, y, z) polipo_writev(x, y, z)
+        #define READV(x, y, z)  polipo_readv(x, y, z)
+        int polipo_readv(int fd, const struct iovec *vector, int count);
+        int polipo_writev(int fd, const struct iovec *vector, int count);
+        ```
+    4. do_scheduled_stream->放到fdevent中，在eventLoop中执行
 12. Chunk是什么？一个大小的chunk有多大，存放的东西是什么？对chunk都有哪些操作？
+
+13. do_scheduled_stream中做了什么？什么时候决定发送还是接受？
+
+14. StreamRequestRec中的offset，len，len2是干嘛的？

@@ -242,3 +242,6 @@ http://ticktick.blog.51cto.com/823160/779866/
 int accept(int sockfd, void *addr, int *addrlen); 
 sockfd 相当简单，是和 listen() 中一样的套接字描述符。addr 是个指 向局部的数据结构 sockaddr_in 的指针。这是要求接入的信息所要去的地 方（你可以测定那个地址在那个端口呼叫你）。在它的地址传递给 accept 之 前，addrlen 是个局部的整形变量，设置为 sizeof(struct sockaddr_in)。 accept 将不会将多余的字节给 addr。如果你放入的少些，那么它会通过改
 变 addrlen 的值反映出来。
+
+[socket05---recv && send使用，回射客户端](http://blog.csdn.net/tingyun_say/article/details/51907687)
+[Socket send函数和recv函数详解](http://www.cnblogs.com/jianqiang2010/archive/2010/08/20/1804598.html)

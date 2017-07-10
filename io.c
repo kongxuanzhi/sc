@@ -196,7 +196,7 @@ schedule_stream(int operation, int fd, int offset,
     } else {
         request.offset = offset;
     }
-    request.handler = handler;
+    request.handler = handler; //httpClientHandler
     request.data = data;
     event = makeFdEvent(fd, 
                         (operation & IO_MASK) == IO_WRITE ?
@@ -232,12 +232,13 @@ schedule_stream(int operation, int fd, int offset,
 
 static const char *endChunkTrailer = "\r\n0\r\n\r\n";
 
+//main函数中，event->handler，调用这个方法
 int
 do_scheduled_stream(int status, FdEventHandlerPtr event)
 {
-    StreamRequestPtr request = (StreamRequestPtr)&event->data;
+    StreamRequestPtr request = (StreamRequestPtr)&event->data; //schedule_stream request->
     int rc, done, i;
-    struct iovec iov[6];
+    struct iovec iov[6]; //6个iov_base, iov_len //输入输出向量
     int chunk_header_len;
     char chunk_header[10];
     int len12 = request->len + request->len2;
@@ -245,8 +246,8 @@ do_scheduled_stream(int status, FdEventHandlerPtr event)
         request->len + request->len2 + 
         ((request->operation & IO_BUF3) ? request->u.b.len3 : 0);
 
-    if(status) {
-        done = request->handler(status, event, request);
+    if(status) { //0 错误情况
+        done = request->handler(status, event, request); //httpClientHandler
         return done;
     }
 
@@ -278,7 +279,7 @@ do_scheduled_stream(int status, FdEventHandlerPtr event)
                     chunk_header_len + request->offset;
                 iov[i].iov_len = -request->offset;
             }
-            i++;
+            i++;//1
         }
     }
 
@@ -299,7 +300,7 @@ do_scheduled_stream(int status, FdEventHandlerPtr event)
         } else if(request->offset < request->len) {
             iov[i].iov_base = request->buf + request->offset;
             iov[i].iov_len = request->len - request->offset;
-            i++;
+            i++;//2
         }
     }
 
@@ -311,7 +312,7 @@ do_scheduled_stream(int status, FdEventHandlerPtr event)
         } else if(request->offset < request->len + request->len2) {
             iov[i].iov_base = request->buf2 + request->offset - request->len;
             iov[i].iov_len = request->len2 - request->offset + request->len;
-            i++;
+            i++;//3
         }
     }
 
@@ -323,7 +324,7 @@ do_scheduled_stream(int status, FdEventHandlerPtr event)
         } else if(request->offset < len12 + request->u.b.len3) {
             iov[i].iov_base = request->u.b.buf3 + request->offset - len12;
             iov[i].iov_len = request->u.b.len3 - request->offset + len12;
-            i++;
+            i++;//4
         }
     }
 
@@ -346,41 +347,41 @@ do_scheduled_stream(int status, FdEventHandlerPtr event)
         if(request->offset <= len123) {
             iov[i].iov_base = (char*)trailer;
             iov[i].iov_len = l;
-            i++;
+            i++;//5
         } else if(request->offset < len123 + l) {
             iov[i].iov_base = 
                 (char*)endChunkTrailer + request->offset - len123;
             iov[i].iov_len = l - request->offset + len123;
-            i++;
+            i++;//5
         }
     }
 
-    assert(i > 0);
-
+    assert(i > 0); //至少有个if执行
+    //将要发送的数据存储在哪里了？
     if((request->operation & IO_MASK) == IO_WRITE) {
-        if(i > 1) 
+        if(i > 1) //写向量
             rc = WRITEV(request->fd, iov, i);
-        else
-            rc = WRITE(request->fd, iov[0].iov_base, iov[0].iov_len);
-    } else {
-        if(i > 1) 
+        else //只有一个，直接写，不写向量
+            rc = WRITE(request->fd, iov[0].iov_base, iov[0].iov_len);// 将ivo中的内存
+    } else { //读的数据放到哪里去了
+        if(i > 1) //读向量
             rc = READV(request->fd, iov, i);
-        else
+        else //读一个内容，不读向量
             rc = READ(request->fd, iov[0].iov_base, iov[0].iov_len);
     }
 
-    if(rc > 0) {
+    if(rc > 0) { //读写成功
         request->offset += rc;
         if(request->offset < 0) return 0;
         done = request->handler(0, event, request); // httpClientHandler
         return done;
-    } else if(rc == 0 || errno == EPIPE) {
+    } else if(rc == 0 || errno == EPIPE) { //statue=1
         done = request->handler(1, event, request); // httpClientHandler
     } else if(errno == EAGAIN || errno == EINTR) {
         return 0;
     } else if(errno == EFAULT || errno == EBADF) {
         abort();
-    } else {
+    } else { //statue=-errno
         done = request->handler(-errno, event, request); //httpClientHandler
     }
     assert(done);

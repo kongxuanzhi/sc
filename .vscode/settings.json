@@ -23,6 +23,7 @@
         "stdlib.h": "c",
         "log.h": "c",
         "libio.h": "c",
-        "md5.h": "c"
+        "md5.h": "c",
+        "polipo.h": "c"
     }
 }

@@ -828,7 +828,7 @@ eventLoop()
                 event = findEvent(poll_fds[j].revents, fdEvents[j]);  //在fdEvents[i]中查找发生的事件revents
                 if(!event) //向下一条查找
                     continue;
-                done = event->handler(0, event); //httpAccept处理event， 0代表未发生错误
+                done = event->handler(0, event); //httpAccept， do_scheduled_stream处理event， 0代表未发生错误
                 if(done) {
                     if(fds_invalid)
                         unregisterFdEvent(event);
