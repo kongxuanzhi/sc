@@ -152,7 +152,7 @@ main(int argc, char **argv)
         exit(0);
     }
 
-    if(expire) { //???????????��?????
+    if(expire) { 
         expireDiskObjects();
         exit(0);
     }
