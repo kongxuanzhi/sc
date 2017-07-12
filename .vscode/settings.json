@@ -22,8 +22,12 @@
         "chunk.h": "c",
         "stdlib.h": "c",
         "log.h": "c",
+<<<<<<< Updated upstream
         "libio.h": "c",
         "md5.h": "c",
         "polipo.h": "c"
+=======
+        "libio.h": "c"
+>>>>>>> Stashed changes
     }
 }
