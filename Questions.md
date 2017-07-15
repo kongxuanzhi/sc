@@ -156,3 +156,30 @@ typedef struct _ConnectRequest {
 
 14. StreamRequestRec中的offset，len，len2是干嘛的？
 
+
+todolist:
+1. Atoms y  
+    * 相当于string类
+    * 使用atomHashTable存放，是一个长度为1024的hash表
+    * 主要函数：internAtomN，internAtom，cat, split, lower, retain, format, toarray
+    * string list,
+2. config y
+    * configVariables链表存储
+    * 存放的类型有 int， float， atom， atomlist， intlst， 
+    * 一键多值的结构 name，还有type和help字符串
+    * 主要函数：CONFIG_VARIABLE， CONFIG_VARIABLE_SETTABLE，
+    * parseConfigFile, parseConfigLine, parsexxx,printxxx,setxxx
+3. Chunks 
+    * 就是一块数据，void*
+    * 是object中的一个属性，用来存放object内容
+    * ChunkArenaPtr 存放一個快。有两种不同的情况
+4. log
+5. Object
+6. Io
+7. Dns
+8. Server 
+9. http
+10. diskcache
+11. local
+12. forbidden
+13. socks

@@ -24,32 +24,35 @@ THE SOFTWARE.
 
 ConfigVariablePtr configVariables = NULL;
 
+
+//search atom
 static ConfigVariablePtr
 findConfigVariable(AtomPtr name)
 {
     ConfigVariablePtr var;
     var = configVariables;
     while(var != NULL) {
-        if(var->name == name)
+        if(var->name == name) // why compare with value or reference?
             break;
         var = var->next;
     }
     return var;
 }
 
+//增加atoms
 void
 declareConfigVariable(AtomPtr name, int type, void *value, 
                       int (*setter)(ConfigVariablePtr, void*), char *help)
 {
     ConfigVariablePtr var, previous, next;
-
+    //search first
     var = findConfigVariable(name);
 
     if(var) {
         do_log(L_ERROR, 
                "Configuration variable %s declared multiple times.\n",
                name->string);
-        if(var->type != type) {
+        if(var->type != type) { //make sure type.
             exit(1);
         }
     }
@@ -60,45 +63,49 @@ declareConfigVariable(AtomPtr name, int type, void *value,
         exit(1);
     }
 
-    var->name = retainAtom(name);
+    var->name = retainAtom(name); //add refcount
     var->type = type;
     switch(type) {
-    case CONFIG_INT: case CONFIG_OCTAL: case CONFIG_HEX: case CONFIG_TIME:
-    case CONFIG_BOOLEAN: case CONFIG_TRISTATE: case CONFIG_TETRASTATE:
-    case CONFIG_PENTASTATE:
-        var->value.i = value; break;
-    case CONFIG_FLOAT: var->value.f = value; break;
-    case CONFIG_ATOM: case CONFIG_ATOM_LOWER: case CONFIG_PASSWORD:
-        var->value.a = value; break;
-    case CONFIG_INT_LIST:
-        var->value.il = value; break;
-    case CONFIG_ATOM_LIST: case CONFIG_ATOM_LIST_LOWER: 
-        var->value.al = value; break;
-    default: abort();
+        case CONFIG_INT: case CONFIG_OCTAL: case CONFIG_HEX: case CONFIG_TIME:
+        case CONFIG_BOOLEAN: case CONFIG_TRISTATE: case CONFIG_TETRASTATE:
+        case CONFIG_PENTASTATE:
+            var->value.i = value; break;
+        case CONFIG_FLOAT: var->value.f = value; break;
+        case CONFIG_ATOM: case CONFIG_ATOM_LOWER: case CONFIG_PASSWORD:
+            var->value.a = value; break;
+        case CONFIG_INT_LIST:
+            var->value.il = value; break;
+        case CONFIG_ATOM_LIST: case CONFIG_ATOM_LIST_LOWER: 
+            var->value.al = value; break;
+        default: abort();
     }
     var->setter = setter;
     var->help = help;
 
+    //insert into queue -> configVariables
     previous = NULL;
     next = configVariables;
     while(next && strcmp(next->name->string, var->name->string) < 0) {
         previous = next;
         next = next->next;
     }
+    
     if(next && strcmp(next->name->string, var->name->string) == 0) {
         do_log(L_ERROR, "Variable %s declared multiple times.\n",
                next->name->string);
         abort();
     }
+    // first element
     if(previous == NULL) {
         var->next = configVariables;
         configVariables = var;
-    } else {
+    } else { //due to order of string
         var->next = next;
         previous->next = var;
     }
 }
 
+// for print start
 static void
 printString(FILE *out, char *string, int html)
 {
@@ -344,7 +351,7 @@ printVariableForm(FILE *out, ConfigVariablePtr var)
     fprintf(out, "</form>");
 }
 
-//��ӡ���е�
+//print config to console
 void
 printConfigVariables(FILE *out, int html)
 {
@@ -369,7 +376,7 @@ printConfigVariables(FILE *out, int html)
                 "<th>new value</th>"
                 "<th>description</th>\n"
                 "</thead><tbody>\n"
-);
+        );
     }
 
     /* configFile is not a config variable, for obvious bootstrapping reasons.
@@ -430,15 +437,15 @@ printConfigVariables(FILE *out, int html)
       PRINT_SEP();
 	
       if(html) {
-	printVariableForm(out, var);
-	PRINT_SEP();
+        　printVariableForm(out, var);
+          PRINT_SEP();
       }
 
       fprintf(out, "%s", var->help?var->help:"");
       if(html)
-	fprintf(out, "</td></tr>\n");
+        　　fprintf(out, "</td></tr>\n");
       else
-	fprintf(out, "\n");
+	    　　fprintf(out, "\n");
 
       entryno++;
       var = var->next;
@@ -450,7 +457,9 @@ printConfigVariables(FILE *out, int html)
     return;
 #undef PRINT_SEP
 }
+//for print end
 
+// for parse start
 static int
 skipWhitespace(char *buf, int i)
 {
@@ -509,29 +518,29 @@ parseState(char *buf, int offset, int kind)
         return -1;
 
     switch(kind) {
-    case CONFIG_BOOLEAN:
-        if(state == 0) return 0;
-        else if(state == 4) return 1;
-        else return -1;
-        break;
-    case CONFIG_TRISTATE:
-        if(state == 0) return 0;
-        else if(state == 2) return 1;
-        else if(state == 4) return 2;
-        else return -1;
-        break;
-    case CONFIG_TETRASTATE:
-        if(state == 0) return 0;
-        else if(state == 1) return 1;
-        else if(state == 3) return 2;
-        else if(state == 4) return 3;
-        else return -1;
-        break;
-    case CONFIG_PENTASTATE:
-        return state;
-        break;
-    default:
-        abort();
+        case CONFIG_BOOLEAN:
+            if(state == 0) return 0;
+            else if(state == 4) return 1;
+            else return -1;
+            break;
+        case CONFIG_TRISTATE:
+            if(state == 0) return 0;
+            else if(state == 2) return 1;
+            else if(state == 4) return 2;
+            else return -1;
+            break;
+        case CONFIG_TETRASTATE:
+            if(state == 0) return 0;
+            else if(state == 1) return 1;
+            else if(state == 3) return 2;
+            else if(state == 4) return 3;
+            else return -1;
+            break;
+        case CONFIG_PENTASTATE:
+            return state;
+            break;
+        default:
+            abort();
     }
 }
 
@@ -601,8 +610,9 @@ parseTime(char *line, int i, int *value_return)
     while(1) {
         if(!digit(line[i]))
             break;
-        w = atoi(line + i);
+        w = atoi(line + i); //end to first whitespace.
         while(digit(line[i])) i++;
+        
         switch(line[i]) {
         case 'd': v += w * 24 * 3600; i++; break;
         case 'h': v += w * 3600; i++; break;
@@ -628,7 +638,7 @@ parseConfigLine(char *line, char *filename, int lineno, int set)
     AtomPtr av;
     AtomListPtr alv;
     IntListPtr ilv;
-
+    //skip head　white space
     i = skipWhitespace(line, 0);
     if(line[i] == '\n' || line[i] == '\0' || line[i] == '#')
         return 0;
@@ -637,17 +647,18 @@ parseConfigLine(char *line, char *filename, int lineno, int set)
     while(letter(line[i]) || digit(line[i]))
         i++;
     x1 = i;
-
+    //test = 
     i = skipWhitespace(line, i);
     if(line[i] != '=') {
         goto syntax;
     }
     i++;
     i = skipWhitespace(line, i);
-
-    name = internAtomN(line + x0, x1 - x0);
-    var = findConfigVariable(name);
-    releaseAtom(name);
+    // why insert and then remove
+    name = internAtomN(line + x0, x1 - x0); // insert into atomHashTable
+    var = findConfigVariable(name); //手动声明好了
+    //因为不需要了
+    releaseAtom(name); //remove from atomHashTable
 
     if(set && var->setter == NULL)
         return -2;
@@ -663,7 +674,7 @@ parseConfigLine(char *line, char *filename, int lineno, int set)
     }
     
     i = skipWhitespace(line, i);
-    switch(var->type) {
+    switch(var->type) {　//手动声明好了
     case CONFIG_INT: case CONFIG_OCTAL: case CONFIG_HEX:
         i = parseInt(line, i, &iv);
         if(i < 0) goto syntax;
@@ -836,7 +847,9 @@ parseConfigFile(AtomPtr filename)
         lineno++;
     }
 }
+//for parse end
 
+// for setter, int float, atom for callback
 int
 configIntSetter(ConfigVariablePtr var, void* value)
 {

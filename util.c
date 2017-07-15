@@ -117,7 +117,7 @@ char
 lwr(char a)
 {
     if(a >= 'A' && a <= 'Z')
-        return a | 0x20; //¶þ½øÖÆ¼õ·¨
+        return a | 0x20; //ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½
     else
         return a;
 }
@@ -337,22 +337,22 @@ sprintf_a(const char *f, ...)
     return s;
 }    
 
-//¼òµ¥µÄÇóÓàÊýµÄhashÖµ¼ÆËã h = (h + key[1...n]) % 1024;
-//hash_size = 10£»
+//ï¿½òµ¥µï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½hashÖµï¿½ï¿½ï¿½ï¿½ h = (h + key[1...n]) % 1024;
+//hash_size = 10ï¿½ï¿½
 unsigned int hash(unsigned int seed, const void *restrict key, int key_size, unsigned int hash_size)
 {
     int i;
     unsigned int h;
 
     h = seed;
-	//ÓÉÓÚhash_sizeµÈÓÚ10£¬unsigned int ÊÇ16Î»£¬Òò´ËÖ»ÒªhµÄÎ»ÊýÐ¡ÓÚ12Î»£¬¾Í²»»áÉáÈ¥×î¸ßÎ»
-	//(h << 5) + (h >> (hash_size - 5)) »á»¹Ô­»ØÈ¥
-	//ÄÇh¾ÍÊÇ¼òµ¥µÄ½«keyµÄ×Ö·ûµÄÊýÖµÏà¼ÓÆðÀ´µÄºÍÔÙ¶Ô1024ÇóÓà¡£ 
+	//ï¿½ï¿½ï¿½ï¿½hash_sizeï¿½ï¿½ï¿½ï¿½10ï¿½ï¿½unsigned int ï¿½ï¿½16Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ö»Òªhï¿½ï¿½Î»ï¿½ï¿½Ð¡ï¿½ï¿½12Î»ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½ï¿½Î»
+	//(h << 5) + (h >> (hash_size - 5)) ï¿½á»¹Ô­ï¿½ï¿½È¥
+	//ï¿½ï¿½hï¿½ï¿½ï¿½Ç¼òµ¥µÄ½ï¿½keyï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½Ù¶ï¿½1024ï¿½ï¿½ï¿½à¡£ 
 	//h = (h + key[1...n]) % 1024;
     for(i = 0; i < key_size; i++)
         h = (h << 5) + (h >> (hash_size - 5)) + ((unsigned char*)key)[i];
-	//·µ»ØÖµ£º0 <= return < 1024
-    return h & ((1 << hash_size) - 1);  //1 << hash_size = 1024 = 0000000111111111 //È¥µô¶þ½øÖÆ´óÓÚµÚ9Î»µÄ²¿·ÖÊý¾Ý
+	//ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½0 <= return < 1024
+    return h & ((1 << hash_size) - 1);  //1 << hash_size = 1024 = 0000000111111111 //È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½Úµï¿½9Î»ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 }
 
 char *
@@ -502,7 +502,7 @@ expandTilde(AtomPtr filename)
     char *home;
     int len;
     AtomPtr ret;
-
+    //å››ç§é”™è¯¯çš„æƒ…å†µçš„åé¢ï¼Œå°±æ˜¯æœ‰2^4-1ç§
     if(filename == NULL || filename->length < 1 ||
        filename->string[0] != '~' || filename->string[1] != '/')
         return filename;

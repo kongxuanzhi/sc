@@ -17,7 +17,9 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+THE SOFTWARE
+
+.
 */
 
 /**
@@ -26,6 +28,7 @@ THE SOFTWARE.
 #include "polipo.h"
 
 #define MB (1024 * 1024)
+//chunk 字节数b
 int chunkLowMark = 0,
     chunkCriticalMark = 0,
     chunkHighMark = 0;
@@ -41,6 +44,7 @@ preinitChunks()
                     "High mark for chunk memory.");
 }
 
+//计算chunkHighMark， chunkCriticalMark，chunkLowMark合适的大小
 static void
 initChunksCommon()
 {

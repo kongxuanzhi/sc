@@ -59,6 +59,7 @@ main(int argc, char **argv)
 
     preinitChunks();
     preinitLog();
+    
     preinitObject();
     preinitIo();
     preinitDns();

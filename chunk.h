@@ -29,13 +29,14 @@ THE SOFTWARE.
 #if ULONG_MAX > 4294967295UL
 #define CHUNK_SIZE (8 * 1024)
 #else
-#define CHUNK_SIZE (4 * 1024)
+#define CHUNK_SIZE (4 * 1024) //内存1页的大小
 #endif
 #else
 #define CHUNK_SIZE (4 * 1024)
 #endif
 #endif
 
+//计算几个chunks
 #define CHUNKS(bytes) ((unsigned long)(bytes) / CHUNK_SIZE)
 
 extern int chunkLowMark, chunkHighMark, chunkCriticalMark;

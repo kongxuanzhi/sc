@@ -83,7 +83,7 @@ THE SOFTWARE.
 #endif
 
 #if defined(__GNUC__) && (__GNUC__ >= 3)
-#define ATTRIBUTE(x) __attribute__(x)
+#define ATTRIBUTE(x) __attribute__(x) //__attribute__可以设置函数属性
 #else
 #define ATTRIBUTE(x) /**/
 #endif

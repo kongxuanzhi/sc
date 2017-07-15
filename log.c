@@ -125,9 +125,17 @@ void
 initLog(void)
 {	//The variable logFile defaults to empty if daemonise is false, and to ‘/var/log/polipo’
 	//otherwise. The variable logSyslog defaults to false, and logFacility defaults to ‘user’.
-    if(daemonise && logFile == NULL && !logSyslog)
+    if(daemonise && logFile == NULL && !logSyslog) //2^3 = 8
         logFile = internAtom("/var/log/polipo");
-
+    // daemonise: true; logFile:NULL; logSyslog: true
+    // daemonise: true; logFile:NULL; logSyslog: false  logFile
+    // daemonise: true; logFile:!NULL; logSyslog: true
+    // daemonise: true; logFile:!NULL; logSyslog: false
+    // daemonise: false; logFile:NULL; logSyslog: true
+    // daemonise: false; logFile:NULL; logSyslog: false
+    // daemonise: false; logFile:!NULL; logSyslog: true
+    // daemonise: false; logFile:!NULL; logSyslog: false
+    //4种情况
     if(logFile != NULL && logFile->length > 0) {
         FILE *f;
         logFile = expandTilde(logFile);
@@ -139,7 +147,7 @@ initLog(void)
         }
         logF = f;
     }
-
+    //4种情况
     if(logSyslog) {
         initSyslog();
 

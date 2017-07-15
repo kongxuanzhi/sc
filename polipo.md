@@ -247,4 +247,3 @@ sockfd 相当简单，是和 listen() 中一样的套接字描述符。addr 是�
 [Socket send函数和recv函数详解](http://www.cnblogs.com/jianqiang2010/archive/2010/08/20/1804598.html)
 
 A.c 文件中定义存储结构，设置全局变量数组之类的并提供对该全局变量的各种操作，其他的文件调用它的方法。
-new machine

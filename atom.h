@@ -23,8 +23,8 @@ THE SOFTWARE.
 typedef struct _Atom {
     unsigned int refcount;
     struct _Atom *next;
-    unsigned short length; //×Ö·û´®³¤¶È
-    char string[1]; //×Ö·û´®
+    unsigned short length; 
+    char string[1]; 
 } AtomRec, *AtomPtr;
 
 typedef struct _AtomList {
