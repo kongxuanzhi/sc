@@ -1,3 +1,6 @@
+DO WHAT THEN HOW TO DO
+TALK IS CHEAP  SHOW ME THE CODE
+
 1. httpAccept如何处理event，处理了哪些事件。 0代表未发生错误
 2. 什么时候，并且怎么把事件放入fdEvents数组, 即 fdEvents[i].fd，那么时候会有新的fd生成，加入进来，新的事件加入进来
     * 程序在调用registerFdEvent和registerFdEventHelper时会将event加入数组，
@@ -158,6 +161,9 @@ typedef struct _ConnectRequest {
 
 
 todolist:
+理解模块: 先猜测该模块做什么的，再看怎么实现 简单
+不要通过怎么实现，来猜测模块干什么的 难
+
 1. Atoms y  
     * 相当于string类
     * 使用atomHashTable存放，是一个长度为1024的hash表
@@ -173,6 +179,7 @@ todolist:
     * 就是一块数据，void*
     * 是object中的一个属性，用来存放object内容
     * ChunkArenaPtr 存放一個快。有两种不同的情况
+    * 主要的函数: initChunksCommon，
 4. log
 5. Object
 6. Io

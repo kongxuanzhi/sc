@@ -189,40 +189,42 @@ totalChunkArenaSize()
 {
     return used_chunks * CHUNK_SIZE;
 }
+
 #else
 
 #ifdef WIN32 /*MINGW*/
-#define MAP_FAILED NULL
-#define getpagesize() (64 * 1024)
-static void *
-alloc_arena(size_t size)
-{
-    return VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-}
-static int
-free_arena(void *addr, size_t size)
-{
-    int rc;
-    rc = VirtualFree(addr, size, MEM_RELEASE);
-    if(!rc)
-        rc = -1;
-    return rc;
-}
+    #define MAP_FAILED NULL
+    #define getpagesize() (64 * 1024)
+    static void *
+    alloc_arena(size_t size)
+    {
+        return VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    }
+    static int
+    free_arena(void *addr, size_t size)
+    {
+        int rc;
+        rc = VirtualFree(addr, size, MEM_RELEASE);
+        if(!rc)
+            rc = -1;
+        return rc;
+    }
+
 #else
-#ifndef MAP_FAILED
-#define MAP_FAILED ((void*)((long int)-1))
-#endif
-static void *
-alloc_arena(size_t size)
-{
-    return mmap(NULL, size, PROT_READ | PROT_WRITE,
-                MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-}
-static int
-free_arena(void *addr, size_t size)
-{
-    return munmap(addr, size);
-}
+    #ifndef MAP_FAILED
+      #define MAP_FAILED ((void*)((long int)-1))
+    #endif
+    static void *
+    alloc_arena(size_t size)
+    {
+        return mmap(NULL, size, PROT_READ | PROT_WRITE,
+                    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    }
+    static int
+    free_arena(void *addr, size_t size)
+    {
+        return munmap(addr, size);
+    }
 #endif
 
 /* Memory is organised into a number of chunks of ARENA_CHUNKS chunks
@@ -282,12 +284,11 @@ typedef unsigned long long ChunkBitmap;
 #define BITMAP_FFS(bitmap) (ffsll(bitmap))
 
 #else
-
 #error "You lose"
 
 #endif
 
-#define ARENA_CHUNKS ((unsigned)sizeof(ChunkBitmap) * 8)
+#define ARENA_CHUNKS ((unsigned)sizeof(ChunkBitmap) * 8) //size(long long) * 8 
 #define EMPTY_BITMAP (~(ChunkBitmap)0)
 #define BITMAP_BIT(i) (((ChunkBitmap)1) << (i))
 
@@ -427,7 +428,7 @@ dispose_chunk(void *chunk)
     } else {
         for(i = 0; i < numArenas; i++) {
             arena = &(chunkArenas[i]);
-            if(CHUNK_IN_ARENA(chunk, arena))
+            if(+(chunk, arena))
                 break;
         }
         assert(arena != NULL);
